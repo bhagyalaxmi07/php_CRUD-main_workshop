@@ -12,10 +12,15 @@ session_start();
 <form action="view_details.php" method="get">
     Search: <input type="text" name="query">
     <input type="submit" value="Search">
-    Sort by: <input type="text" name="sort">
-    <input type="submit" value="sort">
-    <!-- Add a sort button to sort by values -->
+    Sort by: 
+    <select name="sort">
+        <option value="name" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'name') ? 'selected' : ''; ?>>Name</option>
+        <option value="usn" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'usn') ? 'selected' : ''; ?>>USN</option>
+        <option value="phone" <?php echo (isset($_GET['sort']) && $_GET['sort'] == 'phone') ? 'selected' : ''; ?>>Phone</option>
+    </select>
+    <input type="submit" value="Sort">
 </form>
+    <!-- Add a sort button to sort by values -->
     <h2>View Details</h2>
 
     <!-- Display Records -->
@@ -23,7 +28,7 @@ session_start();
         <tr>
             <th>Name</th>
             <th>USN</th>
-            <th>Phone </th>
+            <th>Phone Number</th>
             <th>Delete Record</th>
             <th>Update Record</th>
         </tr>
@@ -34,32 +39,10 @@ session_start();
             die("Connection failed: " . $conn->connect_error);
         }
 
-        $search_query = "";
-        if (isset($_GET['query'])) {
-            $search_query = $_GET['query'];
-        }
+       $search_query = isset($_GET['query']) ? $_GET['query'] : '';
+            $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'name';
 
-        $sort_by = "name";
-        if (isset($_GET['sort'])) {
-            $sort_by = $_GET['sort'];
-        }
-
-        $sql = "SELECT * FROM students";
-        $result = $conn->query($sql);
-
-        $search_query = "";
-        if (isset($_GET['query'])) {
-            $search_query = $_GET['query'];
-            }
-
-        $sql = "SELECT * FROM students WHERE name LIKE '%$search_query%' OR usn LIKE '%$search_query%' OR phone  LIKE '%$search_query%'";
-
-        $sort_by = "name";
-        if (isset($_GET['sort'])) {
-            $sort_by = $_GET['sort'];
-        }
-
-        $sql = "SELECT * FROM students ORDER BY  $sort_by ";
+            $sql = "SELECT * FROM students WHERE name LIKE '%$search_query%' OR usn LIKE '%$search_query%' OR phone LIKE '%$search_query%' ORDER BY $sort_by";
 
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
